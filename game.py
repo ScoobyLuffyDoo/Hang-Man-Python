@@ -2,7 +2,7 @@ import requests
 import random
 import json
 
-
+# Retrives a random word form random word generator 
 def get_randomWord():
     url = "https://randomwordgenerator.com/json/words_ws.json"
     response = requests.request("GET",url)
@@ -10,14 +10,8 @@ def get_randomWord():
     randomNumber= random.randint(1,3256)
     randomWord = return_results['data'][randomNumber]["word"]["value"]
     return randomWord
-    
-def replace_correct_Letter(letter, hiddenword, dictionary_collection):
-    for dict_key in dictionary_collection:
-        dict_letter =dictionary_collection[dict_key]  
-        if dict_letter.upper() == letter:        
-            hiddenword =hiddenword[:dict_key-1] + letter + hiddenword[dict_key:]
-    return hiddenword
 
+# Replaces letters with # to hide the word
 def hide_letters(wordLettersDict,ranWord,hiddenword):
     for dict_key in wordLettersDict:
         dict_letter =wordLettersDict[dict_key]     
@@ -25,6 +19,17 @@ def hide_letters(wordLettersDict,ranWord,hiddenword):
             hiddenword = hiddenword.replace(dict_letter,'#')
     return hiddenword
 
+# Replaces the correct # with the guessed letter if validation passed 
+def replace_correct_Letter(letter, hiddenword, dictionary_collection):
+    for dict_key in dictionary_collection:
+        dict_letter =dictionary_collection[dict_key]  
+        if dict_letter.upper() == letter:        
+            hiddenword =hiddenword[:dict_key-1] + letter + hiddenword[dict_key:]
+    return hiddenword
+
+#====================================#
+#=        Game Start                =#
+#====================================#
 input("Press enter to continue")
 randomWord = get_randomWord()
 word_letters_dict = {}
@@ -34,8 +39,7 @@ for letters in randomWord:
     word_letters_dict[index] = letters
 hiddenword = randomWord
 hiddenword =hide_letters(word_letters_dict,randomWord,hiddenword)
-
-print("Random Word has been selected,")
+print("Random word has been Generated,")
 print("Word is : {0}".format(hiddenword))
 yes_no = input("Can you Guess the word? Y/N\n")
 if yes_no.upper() == "Y":
