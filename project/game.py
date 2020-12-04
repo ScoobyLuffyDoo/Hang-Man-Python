@@ -3,15 +3,12 @@ import random
 import json
 
 
-
-
 def get_randomWord():
     url = "https://randomwordgenerator.com/json/words_ws.json"
     response = requests.request("GET",url)
     return_results = response.json()
     randomNumber= random.randint(1,3256)
     randomWord = return_results['data'][randomNumber]["word"]["value"]
-    print(randomWord)
     return randomWord
     
 def replace_correct_Letter(letter, hiddenword, dictionary_collection):
@@ -20,7 +17,13 @@ def replace_correct_Letter(letter, hiddenword, dictionary_collection):
         if dict_letter.upper() == letter:        
             hiddenword =hiddenword[:dict_key-1] + letter + hiddenword[dict_key:]
     return hiddenword
-    
+
+def hide_letters(wordLettersDict,ranWord,hiddenword):
+    for dict_key in wordLettersDict:
+        dict_letter =wordLettersDict[dict_key]     
+        if str(dict_letter) in ranWord:
+            hiddenword = hiddenword.replace(dict_letter,'#')
+    return hiddenword
 
 input("Press enter to continue")
 randomWord = get_randomWord()
@@ -30,11 +33,7 @@ for letters in randomWord:
     index += 1
     word_letters_dict[index] = letters
 hiddenword = randomWord
-for dict_key in word_letters_dict:
-    dict_letter =word_letters_dict[dict_key]     
-    if str(dict_letter) in randomWord:
-        hiddenword = hiddenword.replace(dict_letter,'#')
-
+hiddenword =hide_letters(word_letters_dict,randomWord,hiddenword)
 
 print("Random Word has been selected,")
 print("Word is : {0}".format(hiddenword))
@@ -42,7 +41,6 @@ yes_no = input("Can you Guess the word? Y/N\n")
 if yes_no.upper() == "Y":
     GuessWord =""    
     Number_of_Guesses = 6
-
     while GuessWord.upper() != randomWord.upper() or Number_of_Guesses != 0:
         GuessWord = input("Guess a letter or a word\n")
         GuessWord = GuessWord.upper()
