@@ -1,57 +1,39 @@
-import requests
-import random
-import json
+#================+++===============================================#
+# Name : Hang Man 
+# Description : Hang man game written in python, uses Get request
+#               to generate a random word 
+# Author : ScoobyLuffyDoo
+#==================================================================#
 
-# Retrives a random word form random word generator 
-def get_randomWord():
-    url = "https://randomwordgenerator.com/json/words_ws.json"
-    response = requests.request("GET",url)
-    return_results = response.json()
-    randomNumber= random.randint(1,3256)
-    randomWord = return_results['data'][randomNumber]["word"]["value"]
-    return randomWord
-
-# Replaces letters with # to hide the word
-def hide_letters(wordLettersDict,ranWord,hiddenword):
-    for dict_key in wordLettersDict:
-        dict_letter =wordLettersDict[dict_key]     
-        if str(dict_letter) in ranWord:
-            hiddenword = hiddenword.replace(dict_letter,'#')
-    return hiddenword
-
-# Replaces the correct # with the guessed letter if validation passed 
-def replace_correct_Letter(letter, hiddenword, dictionary_collection):
-    for dict_key in dictionary_collection:
-        dict_letter =dictionary_collection[dict_key]  
-        if dict_letter.upper() == letter:        
-            hiddenword =hiddenword[:dict_key-1] + letter + hiddenword[dict_key:]
-    return hiddenword
+import BuildWord # Gets a Random Word
+import LetterHandler # Hide and Show Letters
 
 #====================================#
 #=        Game Start                =#
 #====================================#
 input("Press enter to continue")
-randomWord = get_randomWord()
+randomWord = BuildWord.get_randomWord()
 word_letters_dict = {}
 index = 0
 for letters in randomWord:
     index += 1
     word_letters_dict[index] = letters
 hiddenword = randomWord
-hiddenword =hide_letters(word_letters_dict,randomWord,hiddenword)
+hiddenword =LetterHandler.hide_letters(word_letters_dict,randomWord,hiddenword)
 print("Random word has been Generated,")
 print("Word is : {0}".format(hiddenword))
 yes_no = input("Can you Guess the word? Y/N\n")
 if yes_no.upper() == "Y":
     GuessWord =""    
     Number_of_Guesses = 6
-    while GuessWord.upper() != randomWord.upper() or Number_of_Guesses != 0:
+    while Number_of_Guesses > 0:
+        # while GuessWord.upper() != randomWord.upper():
         GuessWord = input("Guess a letter or a word\n")
         GuessWord = GuessWord.upper()
         if GuessWord.upper()  == randomWord.upper():
             break
         elif GuessWord in randomWord.upper():
-            hiddenword = replace_correct_Letter(GuessWord,hiddenword,word_letters_dict)
+            hiddenword = LetterHandler.replace_correct_Letter(GuessWord,hiddenword,word_letters_dict)
             print("Congratulations the letter {0} is in the word\n".format(GuessWord))
             print("Hint : {0}".format(hiddenword))
         else:
